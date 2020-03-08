@@ -1,0 +1,29 @@
+.node {
+  width: 100%;
+  padding-bottom: 100%;
+  border: solid thin grey;
+}
+
+.node-end {
+  background-color: tomato;
+}
+
+.node-start {
+  background-color: green;
+}
+
+.node-wall {
+  background-color: black;
+}
+
+.node-visited {
+  background-color: aqua;
+}
+
+.node-path {
+  background-color: yellow;
+}
+
+.node-weight {
+  background-color: red;
+}
