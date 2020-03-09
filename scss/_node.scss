@@ -1,0 +1,45 @@
+.node {
+  width: 100%;
+  padding-bottom: 100%;
+  border: solid thin grey;
+  cursor: pointer;
+  position: relative;
+  div {
+    position: absolute;
+    width: 100%;
+    margin: 0;
+    top: 50%;
+    font-size: 1.1vw;
+    transform: translate(0, -50%);
+    text-align: center;
+    i {
+      margin: auto;
+    }
+  }
+
+  &-end {
+    background-color: tomato;
+    cursor: move;
+  }
+
+  &-start {
+    background-color: green;
+    cursor: move;
+  }
+
+  &-wall {
+    background-color: black;
+  }
+
+  &-visited {
+    background-color: aqua;
+  }
+
+  &-path {
+    background-color: yellow;
+  }
+
+  &-weight {
+    background-color: red;
+  }
+}

@@ -1,0 +1,50 @@
+#grid {
+  display: grid;
+  grid-template-columns: repeat(50, 1fr);
+  width: 1250px;
+  margin: auto; }
+
+.noselect {
+  -webkit-touch-callout: none;
+  /* iOS Safari */
+  -webkit-user-select: none;
+  /* Safari */
+  -khtml-user-select: none;
+  /* Konqueror HTML */
+  -moz-user-select: none;
+  /* Old versions of Firefox */
+  -ms-user-select: none;
+  /* Internet Explorer/Edge */
+  user-select: none;
+  /* Non-prefixed version, currently                             supported by Chrome, Opera and Firefox */ }
+
+.node {
+  width: 100%;
+  padding-bottom: 100%;
+  border: solid thin grey;
+  cursor: pointer;
+  position: relative; }
+  .node div {
+    position: absolute;
+    width: 100%;
+    margin: 0;
+    top: 50%;
+    font-size: 1.1vw;
+    transform: translate(0, -50%);
+    text-align: center; }
+    .node div i {
+      margin: auto; }
+  .node-end {
+    background-color: tomato;
+    cursor: move; }
+  .node-start {
+    background-color: green;
+    cursor: move; }
+  .node-wall {
+    background-color: black; }
+  .node-visited {
+    background-color: aqua; }
+  .node-path {
+    background-color: yellow; }
+  .node-weight {
+    background-color: red; }

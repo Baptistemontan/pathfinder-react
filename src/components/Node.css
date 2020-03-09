@@ -2,14 +2,17 @@
   width: 100%;
   padding-bottom: 100%;
   border: solid thin grey;
+  cursor: pointer;
 }
 
 .node-end {
   background-color: tomato;
+  cursor: move;
 }
 
 .node-start {
   background-color: green;
+  cursor: move;
 }
 
 .node-wall {

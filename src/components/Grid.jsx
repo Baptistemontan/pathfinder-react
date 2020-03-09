@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import "./Grid.css";
+// import "./Grid.css";
 import Node from "./Node";
 
 const ROW_NUMBER = 25; //25
@@ -7,7 +7,7 @@ const COL_NUMBER = 50; //50
 const UPDATE_DELAY = 30;
 const sendEvent = name => {
   const event = new CustomEvent(name);
-  document.getElementById("grid").dispatchEvent(event);
+  document.dispatchEvent(event);
 };
 
 export default class Grid extends Component {
@@ -90,6 +90,7 @@ export default class Grid extends Component {
 
   handleMouseUp = () => {
     clearTimeout(this.timeOutRef);
+    this.launchDelay = false;
     this.addWalls = false;
     this.removeWalls = false;
     this.addWeights = false;
@@ -206,7 +207,9 @@ export default class Grid extends Component {
           neighbourNode.heuristic =
             Math.abs(col - goalCol) + Math.abs(row - goalRow);
           // 2
-          // neighbourNode.heuristic = Math.sqrt((row - goalRow) ** 2 + (col - goalCol) ** 2)
+          // neighbourNode.heuristic = Math.sqrt(
+          //   (row - goalRow) ** 2 + (col - goalCol) ** 2
+          // );
         }
         // if we are doing some time comparaison we can desactivate the visual update,
         // who will just prevent nodes to refresh their class attributes
@@ -303,6 +306,12 @@ class createNode {
   updatePath() {
     this.isPath = true;
     const eventName = "node-" + this.row + "-" + this.col + "-path";
+    sendEvent(eventName);
+  }
+  updateIO() {
+    this.isStart = false;
+    this.isEnd = false;
+    const eventName = "node-" + this.row + "-" + this.col + "-IO";
     sendEvent(eventName);
   }
 }
