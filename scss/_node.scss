@@ -42,7 +42,7 @@
 
   &-wall {
     border: none;
-    background-color: black;
+    background-color: rgba(23, 25, 48, 0.9);
   }
 
   &-visited {
@@ -73,5 +73,11 @@
         color: black;
       }
     }
+  }
+  &.exemple {
+    width: 25px !important;
+    height: 25px !important;
+    padding-bottom: 0 !important;
+    border: $border;
   }
 }

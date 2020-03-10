@@ -186,7 +186,6 @@ export default class Grid extends Component {
               id="algo-list"
               question="Algorithm :"
             />
-
             <div className="button" onClick={this.visualizeButtonHandler}>
               Visualize
             </div>
@@ -199,7 +198,6 @@ export default class Grid extends Component {
             <div className="button" onClick={this.handleMazeGeneration}>
               Generate Maze
             </div>
-
             <List
               handleChange={this.handleRefreshChange}
               name={this.refresh[0]}
@@ -216,6 +214,32 @@ export default class Grid extends Component {
             />
           </div>
         </nav>
+        <div id="exemple">
+          <div className="exemple-container">
+            <p>Unvisited/Blank Node :</p>
+            <div className="node exemple"></div>
+          </div>
+          <div className="exemple-container">
+            <p>Wall Node :</p>
+            <div className="node exemple node-wall"></div>
+          </div>
+          <div className="exemple-container">
+            <p>Weighted Node (cost 15 to cross) :</p>
+            <div className="node exemple node-weight">
+              <div>
+                <i className="fas fa-weight-hanging iweight"></i>
+              </div>
+            </div>
+          </div>
+          <div className="exemple-container">
+            <p>Visited Node :</p>
+            <div className="node exemple node-visited"></div>
+          </div>
+          <div className="exemple-container">
+            <p>Path Node :</p>
+            <div className="node exemple node-path"></div>
+          </div>
+        </div>
         <div id="grid" className="noselect" onMouseUp={this.handleMouseUp}>
           {this.grid.map(row =>
             row.map(node => {

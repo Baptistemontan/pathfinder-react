@@ -3,8 +3,18 @@
   border-right: solid 1px #afd8f8;
   display: grid;
   grid-template-columns: repeat(51, 1fr);
-  width: 90%;
+  width: 85%;
   margin: auto; }
+
+#exemple {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 30px; }
+  #exemple .exemple-container {
+    display: flex; }
+    #exemple .exemple-container p {
+      margin: 0 8px; }
 
 .choose-algo {
   background-color: #454f5d;
@@ -72,7 +82,7 @@
       display: block; }
   .node-wall {
     border: none;
-    background-color: black; }
+    background-color: rgba(23, 25, 48, 0.9); }
   .node-visited {
     background-color: rgba(0, 190, 218, 0.75); }
   .node-path {
@@ -86,6 +96,11 @@
     color: black; }
   .node-weight.path i.iweight {
     color: black; }
+  .node.exemple {
+    width: 25px !important;
+    height: 25px !important;
+    padding-bottom: 0 !important;
+    border: solid 1px #afd8f8; }
 
 .drop-list {
   display: flex;

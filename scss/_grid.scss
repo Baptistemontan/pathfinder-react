@@ -5,6 +5,19 @@ $border: solid 1px rgb(175, 216, 248);
   border-right: $border;
   display: grid;
   grid-template-columns: repeat(51, 1fr);
-  width: 90%;
+  width: 85%;
   margin: auto;
+}
+
+#exemple {
+  width: 100%;
+  display: flex;
+  justify-content: space-evenly;
+  margin-bottom: 30px;
+  .exemple-container {
+    display: flex;
+    p {
+      margin: 0 8px;
+    }
+  }
 }
