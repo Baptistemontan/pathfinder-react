@@ -1,0 +1,48 @@
+.drop-list {
+  display: flex;
+  height: 100%;
+
+  .list-question {
+    padding-right: 0;
+    margin-right: -10px;
+    z-index: 2;
+  }
+  .select-box {
+    height: 100%;
+    position: relative;
+    .options-container {
+      z-index: 100;
+      margin-top: 8px;
+      position: absolute;
+      background: $background-color;
+      color: $text-color;
+      display: none;
+      transition: all 0.2s ease-out;
+      border-radius: 8px;
+      overflow: hidden;
+      &.active {
+        display: block;
+      }
+      .option {
+        padding: 12px 24px;
+        cursor: pointer;
+        &:hover {
+          background: #414b57;
+        }
+        label {
+          cursor: pointer;
+        }
+        .radio {
+          display: none;
+        }
+      }
+    }
+    .list-button {
+      color: $text-color;
+      position: relative;
+    }
+  }
+  &:hover {
+    background-color: lighten($background-color, 10);
+  }
+}

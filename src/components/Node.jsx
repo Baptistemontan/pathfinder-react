@@ -1,7 +1,5 @@
 import React, { Component } from "react";
-// import "./Node.css";
 
-const TIMEOUT_DELAY = 50;
 const WEIGHT = 15;
 
 export default class Node extends Component {
@@ -24,7 +22,14 @@ export default class Node extends Component {
     };
   }
 
-  onMouseDown = () => {
+  onMouseDown = e => {
+    this.parent.launchID = null;
+    if (!this.parent.autoRefresh) {
+      this.parent.reset();
+    }
+    if (e.button === 2) {
+      this.parent.weightToggle = true;
+    }
     this.parent.mousePressed = true;
     if (this.node.isStart || this.node.isEnd) {
       if (this.node.isStart) {
@@ -51,8 +56,7 @@ export default class Node extends Component {
   };
   onMouseEnter = () => {
     if (this.parent.mousePressed) {
-      clearTimeout(this.parent.timeOutRef);
-      if (this.parent.moveStart || this.parent.moveEnd) {
+      if ((this.parent.moveStart || this.parent.moveEnd) && !this.node.isWall) {
         if (this.parent.moveStart && !this.node.isStart) {
           this.node.isStart = true;
           const exNodeRow = this.parent.startNode.row;
@@ -93,12 +97,9 @@ export default class Node extends Component {
           this.node.weight = 1;
           this.setState({ weight: 1 });
         }
-        // this.parent.timeOutRef = setTimeout(() => {
-        //   this.parent.launchDelay = true;
-        // }, TIMEOUT_DELAY);
       }
     }
-    if (this.parent.launchDelay) {
+    if (this.parent.launchDelay && this.parent.autoRefresh) {
       this.launch();
       this.parent.launchDelay = false;
     }
@@ -119,7 +120,13 @@ export default class Node extends Component {
     this.setState({ isPath: true });
   };
   onReset = () => {
-    this.setState({ isPath: false, isVisited: false, isChecked: false });
+    this.node = this.parent.grid[this.row][this.col];
+    this.setState({
+      isPath: false,
+      isVisited: false,
+      isChecked: false,
+      isWall: this.node.isWall
+    });
   };
   onIOUpdate = () => {
     this.setState({ isStart: false, isEnd: false });
@@ -152,7 +159,13 @@ export default class Node extends Component {
         className={classNames}
         onMouseDown={this.onMouseDown}
         onMouseEnter={this.onMouseEnter}
-      ></div>
+      >
+        <div>
+          <i className="far fa-dot-circle iend"></i>
+          <i className="far fa-compass istart"></i>
+          <i className="fas fa-weight-hanging iweight"></i>
+        </div>
+      </div>
     );
   }
 }

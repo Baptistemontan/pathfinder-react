@@ -1,8 +1,132 @@
 #grid {
+  border-bottom: solid 1px #afd8f8;
+  border-right: solid 1px #afd8f8;
   display: grid;
-  grid-template-columns: repeat(50, 1fr);
-  width: 1250px;
+  grid-template-columns: repeat(51, 1fr);
+  width: 90%;
   margin: auto; }
+
+.choose-algo {
+  background-color: #454f5d;
+  transition: all 0.2s ease-out; }
+
+.nav-bar {
+  display: flex;
+  background-color: #2f3640;
+  color: #f5f6fa;
+  font-size: 15px;
+  height: 50px;
+  text-decoration: none;
+  font-weight: 600;
+  margin-bottom: 30px; }
+  .nav-bar .title {
+    font-size: 25px;
+    width: 130px;
+    margin-left: 20px;
+    position: relative; }
+    .nav-bar .title p {
+      position: absolute;
+      top: 50%;
+      transform: translate(0, -50%); }
+  .nav-bar .options-bar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around; }
+  .nav-bar .button {
+    height: 100%;
+    padding: 12px 24px;
+    cursor: pointer; }
+    .nav-bar .button:hover {
+      background-color: #454f5d; }
+
+.node {
+  width: 100%;
+  padding-bottom: 100%;
+  border-top: solid 1px #afd8f8;
+  border-left: solid 1px #afd8f8;
+  cursor: pointer;
+  position: relative; }
+  .node div {
+    position: absolute;
+    width: 100%;
+    margin: 0;
+    top: 50%;
+    font-size: 1.5vw;
+    transform: translate(0, -50%);
+    text-align: center; }
+    .node div i {
+      display: none;
+      margin: auto; }
+  .node-end {
+    border: none;
+    background-color: rgba(255, 99, 71, 0.75);
+    cursor: move; }
+    .node-end i.iend {
+      display: block; }
+  .node-start {
+    border: none;
+    background-color: rgba(46, 204, 113, 0.75);
+    cursor: move; }
+    .node-start i.istart {
+      display: block; }
+  .node-wall {
+    border: none;
+    background-color: black; }
+  .node-visited {
+    background-color: rgba(0, 190, 218, 0.75); }
+  .node-path {
+    border: none;
+    background-color: #fffe6a; }
+  .node-weight div i {
+    font-size: 1.2vw; }
+  .node-weight i.iweight {
+    display: block; }
+  .node-weight.visited i.iweight {
+    color: black; }
+  .node-weight.path i.iweight {
+    color: black; }
+
+.drop-list {
+  display: flex;
+  height: 100%; }
+  .drop-list .list-question {
+    padding-right: 0;
+    margin-right: -10px;
+    z-index: 2; }
+  .drop-list .select-box {
+    height: 100%;
+    position: relative; }
+    .drop-list .select-box .options-container {
+      z-index: 100;
+      margin-top: 8px;
+      position: absolute;
+      background: #2f3640;
+      color: #f5f6fa;
+      display: none;
+      transition: all 0.2s ease-out;
+      border-radius: 8px;
+      overflow: hidden; }
+      .drop-list .select-box .options-container.active {
+        display: block; }
+      .drop-list .select-box .options-container .option {
+        padding: 12px 24px;
+        cursor: pointer; }
+        .drop-list .select-box .options-container .option:hover {
+          background: #414b57; }
+        .drop-list .select-box .options-container .option label {
+          cursor: pointer; }
+        .drop-list .select-box .options-container .option .radio {
+          display: none; }
+    .drop-list .select-box .list-button {
+      color: #f5f6fa;
+      position: relative; }
+  .drop-list:hover {
+    background-color: #454f5d; }
+
+* {
+  margin: 0;
+  box-sizing: border-box; }
 
 .noselect {
   -webkit-touch-callout: none;
@@ -17,34 +141,3 @@
   /* Internet Explorer/Edge */
   user-select: none;
   /* Non-prefixed version, currently                             supported by Chrome, Opera and Firefox */ }
-
-.node {
-  width: 100%;
-  padding-bottom: 100%;
-  border: solid thin grey;
-  cursor: pointer;
-  position: relative; }
-  .node div {
-    position: absolute;
-    width: 100%;
-    margin: 0;
-    top: 50%;
-    font-size: 1.1vw;
-    transform: translate(0, -50%);
-    text-align: center; }
-    .node div i {
-      margin: auto; }
-  .node-end {
-    background-color: tomato;
-    cursor: move; }
-  .node-start {
-    background-color: green;
-    cursor: move; }
-  .node-wall {
-    background-color: black; }
-  .node-visited {
-    background-color: aqua; }
-  .node-path {
-    background-color: yellow; }
-  .node-weight {
-    background-color: red; }

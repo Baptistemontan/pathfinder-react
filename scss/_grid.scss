@@ -1,21 +1,10 @@
-#grid {
-  display: grid;
-  grid-template-columns: repeat(50, 1fr);
-  width: 1250px;
-  margin: auto;
-}
+$border: solid 1px rgb(175, 216, 248);
 
-.noselect {
-  -webkit-touch-callout: none;
-  /* iOS Safari */
-  -webkit-user-select: none;
-  /* Safari */
-  -khtml-user-select: none;
-  /* Konqueror HTML */
-  -moz-user-select: none;
-  /* Old versions of Firefox */
-  -ms-user-select: none;
-  /* Internet Explorer/Edge */
-  user-select: none;
-  /* Non-prefixed version, currently                             supported by Chrome, Opera and Firefox */
+#grid {
+  border-bottom: $border;
+  border-right: $border;
+  display: grid;
+  grid-template-columns: repeat(51, 1fr);
+  width: 90%;
+  margin: auto;
 }

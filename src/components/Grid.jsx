@@ -1,10 +1,9 @@
 import React, { Component } from "react";
-// import "./Grid.css";
 import Node from "./Node";
+import List from "./List";
 
-const ROW_NUMBER = 25; //25
-const COL_NUMBER = 50; //50
-const UPDATE_DELAY = 30;
+const ROW_NUMBER = 23; //25
+const COL_NUMBER = 51; //50
 const sendEvent = name => {
   const event = new CustomEvent(name);
   document.dispatchEvent(event);
@@ -25,17 +24,28 @@ export default class Grid extends Component {
     this.launchID = undefined;
     this.timeOutRef = undefined;
     this.launchDelay = false;
+    this.activeAlgo = null;
+    this.algos = ["Dijkstra", "A*"];
+    this.speeds = ["Fast", "Normal", "Slow"];
+    this.speed = 15;
+    this.refresh = ["ON", "OFF"];
+    this.autoRefresh = true;
     this.endNode = {
-      row: 13,
+      row: 11,
       col: 45,
       assigned: true
     };
     this.startNode = {
-      row: 13,
+      row: 11,
       col: 5,
       assigned: true
     };
     this.grid = [];
+  }
+  componentDidMount() {
+    document.getElementById("grid").addEventListener("contextmenu", e => {
+      e.preventDefault();
+    });
   }
 
   initGrid = () => {
@@ -52,44 +62,62 @@ export default class Grid extends Component {
       }
     }
   };
-  reset() {
+  reset = () => {
+    this.launchID = Math.random();
     this.grid.forEach(row => row.forEach(node => node.reset()));
     sendEvent("reset");
-  }
+  };
+
+  clear = () => {
+    this.launchID = Math.random();
+    this.grid.forEach(row => row.forEach(node => node.clear()));
+    this.reset();
+  };
 
   visualizeButtonHandler = () => {
     this.launch(true);
   };
-  weightButtonHandler = () => {
-    if (this.weightToggle) {
-      this.weightToggle = false;
-    } else {
-      this.weightToggle = true;
-    }
-  };
 
   launch = (animation = false) => {
-    console.time("timer");
-    this.reset();
-    this.launchID = Math.random();
-    const startNode = this.grid[this.startNode.row][this.startNode.col];
-    startNode.distance = 0;
-    this.Dijkstra(
-      startNode,
-      this.endNode.row,
-      this.endNode.col,
-      true,
-      this.launchID,
-      animation
-    );
-    if (!animation) {
-      sendEvent("update");
+    if (this.activeAlgo != null) {
+      console.time(this.activeAlgo);
+      this.reset();
+      const startNode = this.grid[this.startNode.row][this.startNode.col];
+      startNode.distance = 0;
+      if (this.activeAlgo === this.algos[0]) {
+        this.Dijkstra(
+          startNode,
+          this.endNode.row,
+          this.endNode.col,
+          false,
+          this.launchID,
+          animation
+        );
+      }
+      if (this.activeAlgo === this.algos[1]) {
+        this.Dijkstra(
+          startNode,
+          this.endNode.row,
+          this.endNode.col,
+          true,
+          this.launchID,
+          animation
+        );
+      }
+      if (!animation) {
+        sendEvent("update");
+      }
+      console.timeEnd(this.activeAlgo);
+    } else {
+      const element = document.getElementById("algo-list");
+      element.classList.add("choose-algo");
+      setTimeout(() => {
+        element.classList.remove("choose-algo");
+      }, 200);
     }
-    console.timeEnd("timer");
   };
 
   handleMouseUp = () => {
-    clearTimeout(this.timeOutRef);
     this.launchDelay = false;
     this.addWalls = false;
     this.removeWalls = false;
@@ -98,16 +126,93 @@ export default class Grid extends Component {
     this.mousePressed = false;
     this.moveStart = false;
     this.moveEnd = false;
-    this.launch();
+    this.weightToggle = false;
+    if (this.autoRefresh) {
+      this.launch();
+    }
+  };
+
+  handleAlgoChange = content => {
+    this.activeAlgo = content;
+  };
+
+  handleRefreshChange = content => {
+    if (content === "ON") {
+      this.autoRefresh = true;
+    } else {
+      this.autoRefresh = false;
+    }
+  };
+  handleSpeedChange = content => {
+    if (content === "Slow") {
+      this.speed = 60;
+    } else if (content === "Normal") {
+      this.speed = 30;
+    } else {
+      this.speed = 15;
+    }
+  };
+
+  handleMazeGeneration = () => {
+    this.reset();
+    this.grid.forEach(row =>
+      row.forEach(node => {
+        if (!node.isStart && !node.isEnd) {
+          node.isWall = true;
+        }
+      })
+    );
+    this.mazeGenerator(this.grid[1][1], 1);
+    this.reset();
   };
 
   render() {
     this.initGrid();
     return (
-      <div className="main" onMouseUp={this.handleMouseUp}>
-        <button onClick={this.visualizeButtonHandler}>Visualize</button>
-        <button onClick={this.weightButtonHandler}>toggle Weight</button>
-        <div id="grid" className="noselect">
+      <div className="main">
+        <nav className="nav-bar">
+          <div className="title">
+            <p>PathFinder</p>
+          </div>
+          <div className="options-bar noselect">
+            <List
+              handleChange={this.handleAlgoChange}
+              name="Select Algorithm"
+              choices={this.algos}
+              id="algo-list"
+              question="Algorithm :"
+            />
+
+            <div className="button" onClick={this.visualizeButtonHandler}>
+              Visualize
+            </div>
+            <div className="button" onClick={this.reset}>
+              Clear Path
+            </div>
+            <div className="button" onClick={this.clear}>
+              Clear Walls & Weights
+            </div>
+            <div className="button" onClick={this.handleMazeGeneration}>
+              Generate Maze
+            </div>
+
+            <List
+              handleChange={this.handleRefreshChange}
+              name={this.refresh[0]}
+              choices={this.refresh}
+              id="refresh-list"
+              question="Auto Refresh :"
+            />
+            <List
+              handleChange={this.handleSpeedChange}
+              name={this.speeds[0]}
+              choices={this.speeds}
+              id="speed-list"
+              question="Speed :"
+            />
+          </div>
+        </nav>
+        <div id="grid" className="noselect" onMouseUp={this.handleMouseUp}>
           {this.grid.map(row =>
             row.map(node => {
               return (
@@ -222,7 +327,8 @@ export default class Grid extends Component {
               if (this.launchID === ID) {
                 neighbourNode.updateVisited();
               }
-            }, neighbourNode.distance * UPDATE_DELAY);
+              // }, neighbourNode.distance * this.speed);
+            }, iteration * this.speed);
           }
         }
       }
@@ -236,7 +342,7 @@ export default class Grid extends Component {
             if (this.launchID === ID) {
               parent.updatePath();
             }
-          }, (offset + parent.distance) * UPDATE_DELAY);
+          }, (offset + parent.distance) * this.speed);
         } else {
           parent.isPath = true;
         }
@@ -260,7 +366,8 @@ export default class Grid extends Component {
     //and mark it as checked so we will never look at it again
     nextNode.isChecked = true;
     if (nextNode.isEnd) {
-      pathFounded(nextNode, nextNode.distance);
+      // pathFounded(nextNode, nextNode.distance);
+      pathFounded(nextNode, iteration);
       return true;
     }
     return this.Dijkstra(
@@ -273,6 +380,47 @@ export default class Grid extends Component {
       nodeQueue,
       iteration + 1
     );
+  }
+
+  mazeGenerator(parentNode, ID, iteration = 0) {
+    console.log(iteration);
+    parentNode.isVisited = true;
+    parentNode.isWall = false;
+    const vectors = [
+      { row: 2, col: 0 },
+      { row: -2, col: 0 },
+      { row: 0, col: 2 },
+      { row: 0, col: -2 }
+    ];
+    const availablesNeigbours = [];
+    const testNeigbours = (row, col) => {
+      if (row < ROW_NUMBER && row >= 0 && col < COL_NUMBER && col >= 0) {
+        const neighbourNode = this.grid[row][col];
+        if (!neighbourNode.isVisited) {
+          availablesNeigbours.push(neighbourNode);
+        }
+      }
+    };
+    const openMiddleNode = node => {
+      const row = (node.row + parentNode.row) / 2;
+      const col = (node.col + parentNode.col) / 2;
+      this.grid[row][col].isWall = false;
+    };
+    vectors.forEach(vector => {
+      testNeigbours(parentNode.row + vector.row, parentNode.col + vector.col);
+    });
+    if (!availablesNeigbours.length) {
+      return false;
+    }
+
+    const randomNeighbour = Math.floor(
+      Math.random() * availablesNeigbours.length
+    );
+    const nextNode = availablesNeigbours[randomNeighbour];
+    nextNode.parent = parentNode;
+    openMiddleNode(nextNode);
+    this.mazeGenerator(nextNode, ID, iteration + 1);
+    return this.mazeGenerator(parentNode, ID, iteration + 1);
   }
 }
 
@@ -296,8 +444,6 @@ class createNode {
     this.isPath = false;
     this.distance = undefined;
     this.heuristic = undefined;
-    this.offset = 0;
-    this.delay = 0;
   }
   updateVisited() {
     const eventName = "node-" + this.row + "-" + this.col + "-visited";
@@ -313,5 +459,9 @@ class createNode {
     this.isEnd = false;
     const eventName = "node-" + this.row + "-" + this.col + "-IO";
     sendEvent(eventName);
+  }
+  clear() {
+    this.isWall = false;
+    this.weight = 1;
   }
 }
