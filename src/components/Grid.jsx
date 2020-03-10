@@ -223,14 +223,7 @@ export default class Grid extends Component {
             <p>Wall Node :</p>
             <div className="node exemple node-wall"></div>
           </div>
-          <div className="exemple-container">
-            <p>Weighted Node (cost 15 to cross) :</p>
-            <div className="node exemple node-weight">
-              <div>
-                <i className="fas fa-weight-hanging iweight"></i>
-              </div>
-            </div>
-          </div>
+
           <div className="exemple-container">
             <p>Visited Node :</p>
             <div className="node exemple node-visited"></div>
@@ -238,6 +231,14 @@ export default class Grid extends Component {
           <div className="exemple-container">
             <p>Path Node :</p>
             <div className="node exemple node-path"></div>
+          </div>
+          <div className="exemple-container">
+            <p>Weighted Node (cost 15 to cross) :</p>
+            <div className="node exemple node-weight">
+              <div>
+                <i className="fas fa-weight-hanging iweight"></i>
+              </div>
+            </div>
           </div>
         </div>
         <div id="grid" className="noselect" onMouseUp={this.handleMouseUp}>
