@@ -62,10 +62,12 @@ export default class Grid extends Component {
       }
     }
   };
-  reset = () => {
+  reset = (update = true) => {
     this.launchID = Math.random();
     this.grid.forEach(row => row.forEach(node => node.reset()));
-    sendEvent("reset");
+    if (update) {
+      sendEvent("reset");
+    }
   };
 
   clear = () => {
@@ -154,7 +156,8 @@ export default class Grid extends Component {
   };
 
   handleMazeGeneration = () => {
-    this.reset();
+    console.time("Maze");
+    this.reset(false);
     this.grid.forEach(row =>
       row.forEach(node => {
         if (!node.isStart && !node.isEnd) {
@@ -162,8 +165,9 @@ export default class Grid extends Component {
         }
       })
     );
-    this.mazeGenerator(this.grid[1][1], 1);
+    this.mazeGenerator(this.grid[1][1]);
     this.reset();
+    console.timeEnd("Maze");
   };
 
   render() {
@@ -382,8 +386,7 @@ export default class Grid extends Component {
     );
   }
 
-  mazeGenerator(parentNode, ID, iteration = 0) {
-    console.log(iteration);
+  mazeGenerator(parentNode) {
     parentNode.isVisited = true;
     parentNode.isWall = false;
     const vectors = [
@@ -412,15 +415,15 @@ export default class Grid extends Component {
     if (!availablesNeigbours.length) {
       return false;
     }
-
-    const randomNeighbour = Math.floor(
-      Math.random() * availablesNeigbours.length
-    );
+    let randomNeighbour;
+    do {
+      randomNeighbour = Math.floor(Math.random() * availablesNeigbours.length);
+    } while (randomNeighbour === availablesNeigbours.length);
     const nextNode = availablesNeigbours[randomNeighbour];
     nextNode.parent = parentNode;
     openMiddleNode(nextNode);
-    this.mazeGenerator(nextNode, ID, iteration + 1);
-    return this.mazeGenerator(parentNode, ID, iteration + 1);
+    this.mazeGenerator(nextNode);
+    return this.mazeGenerator(parentNode);
   }
 }
 
