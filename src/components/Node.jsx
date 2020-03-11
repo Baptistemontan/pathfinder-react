@@ -125,7 +125,8 @@ export default class Node extends Component {
       isPath: false,
       isVisited: false,
       isChecked: false,
-      isWall: this.node.isWall
+      isWall: this.node.isWall,
+      weight: this.node.weight
     });
   };
   onIOUpdate = () => {
