@@ -67,9 +67,9 @@ $wall-color: rgba(23, 25, 48, 0.9);
     }
   }
   &.exemple {
-    width: 25px !important;
-    height: 25px !important;
-    padding-bottom: 0 !important;
+    width: 25px;
+    height: 25px;
+    padding-bottom: 0;
     border: $border;
   }
 }
