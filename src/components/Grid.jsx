@@ -86,10 +86,10 @@ export default class Grid extends Component {
   };
   //this is to clear all the nodes
   //and we also call reset at the end
-  clear = () => {
+  clear = (update = true) => {
     this.launchID = Math.random();
     this.grid.forEach(row => row.forEach(node => node.clear()));
-    this.reset();
+    this.reset(update);
   };
   //this is to handle the visualize button click
   visualizeButtonHandler = () => {
@@ -182,7 +182,7 @@ export default class Grid extends Component {
   //this launch the maze generation
   //we reset all the nodes but don't update them(cause we reset them after)
   handleMazeGeneration = () => {
-    this.reset(false);
+    this.clear(false);
     //we make each node a wall, exept the end/start nodes
     this.grid.forEach(row =>
       row.forEach(node => {
