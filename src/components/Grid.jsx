@@ -22,12 +22,11 @@ export default class Grid extends Component {
     this.moveEnd = false;
     this.diagonal = false;
     this.launchID = undefined;
-    this.timeOutRef = undefined;
     this.launchDelay = false;
     this.activeAlgo = null;
     this.algos = ["Dijkstra", "A*"];
     this.speeds = ["Fast", "Normal", "Slow"];
-    this.speed = 15;
+    this.speed = 10;
     this.refresh = ["ON", "OFF"];
     this.autoRefresh = true;
     this.endNode = {
@@ -149,9 +148,9 @@ export default class Grid extends Component {
     if (content === "Slow") {
       this.speed = 60;
     } else if (content === "Normal") {
-      this.speed = 30;
+      this.speed = 25;
     } else {
-      this.speed = 15;
+      this.speed = 10;
     }
   };
 

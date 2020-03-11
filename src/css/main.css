@@ -7,7 +7,8 @@
   margin: auto; }
 
 #exemple {
-  width: 100%;
+  width: 85%;
+  margin: auto;
   display: flex;
   justify-content: space-evenly;
   margin-bottom: 30px; }
@@ -55,6 +56,7 @@
   padding-bottom: 100%;
   border-top: solid 1px #afd8f8;
   border-left: solid 1px #afd8f8;
+  color: rgba(23, 25, 48, 0.9);
   cursor: pointer;
   position: relative; }
   .node div {
@@ -92,10 +94,6 @@
     font-size: 1.2vw; }
   .node-weight i.iweight {
     display: block; }
-  .node-weight.visited i.iweight {
-    color: black; }
-  .node-weight.path i.iweight {
-    color: black; }
   .node.exemple {
     width: 25px !important;
     height: 25px !important;
