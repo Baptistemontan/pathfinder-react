@@ -81,7 +81,6 @@ export default class Grid extends Component {
 
   launch = (animation = false) => {
     if (this.activeAlgo != null) {
-      console.time(this.activeAlgo);
       this.reset();
       const startNode = this.grid[this.startNode.row][this.startNode.col];
       startNode.distance = 0;
@@ -108,7 +107,6 @@ export default class Grid extends Component {
       if (!animation) {
         sendEvent("update");
       }
-      console.timeEnd(this.activeAlgo);
     } else {
       const element = document.getElementById("algo-list");
       element.classList.add("choose-algo");
@@ -155,7 +153,6 @@ export default class Grid extends Component {
   };
 
   handleMazeGeneration = () => {
-    console.time("Maze");
     this.reset(false);
     this.grid.forEach(row =>
       row.forEach(node => {
@@ -166,7 +163,6 @@ export default class Grid extends Component {
     );
     this.mazeGenerator(this.grid[1][1]);
     this.reset();
-    console.timeEnd("Maze");
   };
 
   render() {
