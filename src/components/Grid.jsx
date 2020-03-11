@@ -2,16 +2,27 @@ import React, { Component } from "react";
 import Node from "./Node";
 import List from "./List";
 
-const ROW_NUMBER = 23; //25
-const COL_NUMBER = 51; //50
+//ok this component is a fucking mess but i will try my best to explain it
+//all the comments for dijkstra,A* and the maze generator are purely implementation oriented,
+//if you want to really understand the code look about those algorithms online,
+//I learned Dijkstra and A* with computerphile videos
+//and the maze generation general idea with this video : https://www.youtube.com/watch?v=elMXlO28Q1U
+
+//const declaration
+const ROW_NUMBER = 23; //23
+const COL_NUMBER = 51; //51
+//and an event trigger, which will just trigger every event listener that listen for the event name that you pass to the function
+//(this app is heavily based on event, i couldnt found another way to centralised the nodes but to update there state themself)
 const sendEvent = name => {
   const event = new CustomEvent(name);
   document.dispatchEvent(event);
 };
 
 export default class Grid extends Component {
+  //this component has no input
   constructor(props) {
     super(props);
+    //variable declaration
     this.addWalls = false;
     this.removeWalls = false;
     this.addWeights = false;
@@ -20,10 +31,9 @@ export default class Grid extends Component {
     this.weightToggle = false;
     this.moveStart = false;
     this.moveEnd = false;
-    this.diagonal = false;
     this.launchID = undefined;
-    this.launchDelay = false;
     this.activeAlgo = null;
+    this.diagonal = false; //not implemented yet
     this.algos = ["Dijkstra", "A*"];
     this.speeds = ["Fast", "Normal", "Slow"];
     this.speed = 10;
@@ -31,22 +41,22 @@ export default class Grid extends Component {
     this.autoRefresh = true;
     this.endNode = {
       row: 11,
-      col: 45,
-      assigned: true
+      col: 45
     };
     this.startNode = {
       row: 11,
-      col: 5,
-      assigned: true
+      col: 5
     };
     this.grid = [];
   }
+  //when the component is rendered, we prevent the right click pop up, I know its a bad things to do
+  //but its just that if every time you add a weight you have this pop up its annoying
   componentDidMount() {
     document.getElementById("grid").addEventListener("contextmenu", e => {
       e.preventDefault();
     });
   }
-
+  //this is to create the grid, wich is just an array of array of nodes (declaration of the class at the end)
   initGrid = () => {
     for (let row = 0; row < ROW_NUMBER; row++) {
       this.grid[row] = [];
@@ -61,6 +71,12 @@ export default class Grid extends Component {
       }
     }
   };
+  //this is to reset all the nodes
+  //we also reset the launchID
+  //and we tell the nodes they have been reset by triggering the event
+  //the difference of reset vs clear is that reset is path related (visited nodes and path)
+  // and clear is obstacle related (walls and weight)
+  //the update input is in cas we want to reset them but not update them visualy
   reset = (update = true) => {
     this.launchID = Math.random();
     this.grid.forEach(row => row.forEach(node => node.reset()));
@@ -68,22 +84,29 @@ export default class Grid extends Component {
       sendEvent("reset");
     }
   };
-
+  //this is to clear all the nodes
+  //and we also call reset at the end
   clear = () => {
     this.launchID = Math.random();
     this.grid.forEach(row => row.forEach(node => node.clear()));
     this.reset();
   };
-
+  //this is to handle the visualize button click
   visualizeButtonHandler = () => {
     this.launch(true);
   };
-
+  //this is the function that launch the algorithm
+  //its input is if we have the animtion or not
+  //if you click visualize you have the animation
+  //but if you move the start node around you dont want to have the animation
   launch = (animation = false) => {
     if (this.activeAlgo != null) {
+      //first we reset all the nodes
       this.reset();
       const startNode = this.grid[this.startNode.row][this.startNode.col];
+      //then we initialize the start node distance
       startNode.distance = 0;
+      //then we look wich algo is active and fire it up
       if (this.activeAlgo === this.algos[0]) {
         this.Dijkstra(
           startNode,
@@ -104,10 +127,12 @@ export default class Grid extends Component {
           animation
         );
       }
+      //then if there is no animation we just told the nodes to update themself
       if (!animation) {
         sendEvent("update");
       }
     } else {
+      //if there is no algorithm choosen we just do a little animation on the select button
       const element = document.getElementById("algo-list");
       element.classList.add("choose-algo");
       setTimeout(() => {
@@ -115,9 +140,9 @@ export default class Grid extends Component {
       }, 200);
     }
   };
-
+  //the nodes component handle the moue down/enter themself, but we handle the mouseUp here
+  //we just rest all the variable related to create/delete/move things around
   handleMouseUp = () => {
-    this.launchDelay = false;
     this.addWalls = false;
     this.removeWalls = false;
     this.addWeights = false;
@@ -126,15 +151,17 @@ export default class Grid extends Component {
     this.moveStart = false;
     this.moveEnd = false;
     this.weightToggle = false;
+    //and if the auto refresh is toggle we update the path
     if (this.autoRefresh) {
       this.launch();
     }
   };
-
+  //change the active variable based on woch one has been choosen in the list
   handleAlgoChange = content => {
     this.activeAlgo = content;
   };
 
+  //toggle the auto refresh
   handleRefreshChange = content => {
     if (content === "ON") {
       this.autoRefresh = true;
@@ -142,6 +169,7 @@ export default class Grid extends Component {
       this.autoRefresh = false;
     }
   };
+  //change the speed animation based on the choice made
   handleSpeedChange = content => {
     if (content === "Slow") {
       this.speed = 60;
@@ -151,9 +179,11 @@ export default class Grid extends Component {
       this.speed = 10;
     }
   };
-
+  //this launch the maze generation
+  //we reset all the nodes but don't update them(cause we reset them after)
   handleMazeGeneration = () => {
     this.reset(false);
+    //we make each node a wall, exept the end/start nodes
     this.grid.forEach(row =>
       row.forEach(node => {
         if (!node.isStart && !node.isEnd) {
@@ -161,7 +191,9 @@ export default class Grid extends Component {
         }
       })
     );
+    //and then we call the maze generator who will just cut its way through the walls
     this.mazeGenerator(this.grid[1][1]);
+    //then we reset the node again because we modified the isVisited properties of most of them
     this.reset();
   };
 
@@ -190,9 +222,7 @@ export default class Grid extends Component {
             <div className="button" onClick={this.clear}>
               Clear Walls & Weights
             </div>
-            <div className="button" onClick={this.handleMazeGeneration}>
-              Generate Maze
-            </div>
+
             <List
               handleChange={this.handleRefreshChange}
               name={this.refresh[0]}
@@ -207,6 +237,9 @@ export default class Grid extends Component {
               id="speed-list"
               question="Speed :"
             />
+            <div className="button" onClick={this.handleMazeGeneration}>
+              Generate Maze
+            </div>
           </div>
         </nav>
         <div id="exemple">
@@ -246,7 +279,6 @@ export default class Grid extends Component {
                   row={node.row}
                   col={node.col}
                   parent={this}
-                  launch={this.launch}
                 />
               );
             })
@@ -255,6 +287,15 @@ export default class Grid extends Component {
       </div>
     );
   }
+  //big oof
+  //so here is my implementation of dijkstra
+  //Im sure its can be optimised but meh
+  //so in input: the start node, the goal row/col, if we use A* or not,the launchID and if we enable animation
+  //so first the launchID, what the heck is that? well if the animation is still going throught and then boum you want a maze
+  //you will have your maze but the setTimeout are goig to say: 'I dont care, my mission is to make you a visited node'
+  //so to prevent that before each launch of the algorithm i create a random launchID
+  //so in the setTimeout I look if the ID has changed, if yes, it dont do shit and my maze is fine
+  //so to stop the animation to occur I just change one variable
   Dijkstra(
     parentNode,
     goalRow,
@@ -265,12 +306,14 @@ export default class Grid extends Component {
     nodeQueue = [],
     iteration = 0
   ) {
+    //here are the vectors for looking at the neighbours
     const vectors = [
       { row: 1, col: 0 },
       { row: -1, col: 0 },
       { row: 0, col: 1 },
       { row: 0, col: -1 }
     ];
+    // NOT IMPLEMENTED YET
     if (this.diagonal) {
       vectors.push(
         { row: 1, col: 1 },
@@ -279,13 +322,13 @@ export default class Grid extends Component {
         { row: 1, col: -1 }
       );
     }
+    //the function to call to sort the queue
     const sortQueue = () =>
       nodeQueue.sort((a, b) => {
         if (astar) {
           //if we use A* we sort by the distance to the origins + the heurisric distance
           const comparaison =
             a.distance + a.heuristic - (b.distance + b.heuristic);
-          // return comparaison;
           //if the comparaison decide which of the 2 elements is the better we return it
           if (comparaison !== 0) {
             return comparaison;
@@ -293,10 +336,11 @@ export default class Grid extends Component {
           //otherwise compare the heuristic value of the 2 elements
           return a.heuristic - b.heuristic;
         } else {
-          // here we sort by the distance to the origin
+          // with vanilla Dijkstra we sort by the distance to the origin
           return a.distance - b.distance;
         }
       });
+    //the function that check the neigbours of the active nodes
     const testNeighbour = (row, col) => {
       //if its off limit we dont try it
       if (row < ROW_NUMBER && row >= 0 && col < COL_NUMBER && col >= 0) {
@@ -345,12 +389,16 @@ export default class Grid extends Component {
         //this if statement is purely visual, so we can skip it
 
         if (!neighbourNode.isVisited) {
+          //if it was never visited before we set it to true
           neighbourNode.isVisited = true;
+          //if we have animation on, we set a timeout to update the node
           if (animation) {
             setTimeout(() => {
               if (this.launchID === ID) {
                 neighbourNode.updateVisited();
               }
+              //this commented line is because I used to set the timeout based on the distance to the origin
+              //but to really show how the algorithm work i based it on when she has been visited
               // }, neighbourNode.distance * this.speed);
             }, iteration * this.speed);
           }
@@ -358,6 +406,8 @@ export default class Grid extends Component {
       }
     };
     //here is the function to call to update visually the path
+    //the offset is the amount of time the visited animation take
+    //beause we want to update the path after
     const pathFounded = (parent, offset) => {
       //we skip the start node
       if (!parent.isStart) {
@@ -373,7 +423,7 @@ export default class Grid extends Component {
         pathFounded(parent.parentNode, offset);
       }
     };
-    //here we just cycle through each vector to check the neighbours of the current 'parent' node
+    //here we just cycle through each vector to check the neighbours of the current active node
     vectors.forEach(vector => {
       testNeighbour(parentNode.row + vector.row, parentNode.col + vector.col);
     });
@@ -381,7 +431,7 @@ export default class Grid extends Component {
     sortQueue();
     //and get the next 'parent' node
     const nextNode = nodeQueue[0];
-    //if nextNode is undefined, that mean that every possible path as been explore but the end has never been reached, or there is no path to the end node
+    //if nextNode is undefined, that mean that every possible path as been explore but the end has never been reached, so there is no path to the end node
     if (nextNode === undefined) {
       return false;
     }
@@ -394,6 +444,7 @@ export default class Grid extends Component {
       pathFounded(nextNode, iteration);
       return true;
     }
+    //and we call dijktra again and pass it the new Active Node, the Queue and increment the iteration count
     return this.Dijkstra(
       nextNode,
       goalRow,
@@ -405,10 +456,13 @@ export default class Grid extends Component {
       iteration + 1
     );
   }
-
+  //this maze generator is  just a recursive backtracking
+  //we give him an active node
   mazeGenerator(parentNode) {
+    //it set it to visited and remove the walls on it
     parentNode.isVisited = true;
     parentNode.isWall = false;
+    //its the same vectors than the path finding algorithms but with an scale of 2
     const vectors = [
       { row: 2, col: 0 },
       { row: -2, col: 0 },
@@ -416,36 +470,49 @@ export default class Grid extends Component {
       { row: 0, col: -2 }
     ];
     const availablesNeigbours = [];
+    //thi function will test the giver neigbours
     const testNeigbours = (row, col) => {
       if (row < ROW_NUMBER && row >= 0 && col < COL_NUMBER && col >= 0) {
+        //we skip it if its out of bound or if its already been visited
         const neighbourNode = this.grid[row][col];
         if (!neighbourNode.isVisited) {
+          //then we add it to the neigbours queue
           availablesNeigbours.push(neighbourNode);
         }
       }
     };
+    //this is to remove the walls between this node and the next node
     const openMiddleNode = node => {
       const row = (node.row + parentNode.row) / 2;
       const col = (node.col + parentNode.col) / 2;
       this.grid[row][col].isWall = false;
     };
+    //we test all our neigbours node
     vectors.forEach(vector => {
       testNeigbours(parentNode.row + vector.row, parentNode.col + vector.col);
     });
+    //if there is no available neighbours we stop for this node
     if (!availablesNeigbours.length) {
       return false;
     }
-    let randomNeighbour;
-    do {
-      randomNeighbour = Math.floor(Math.random() * availablesNeigbours.length);
-    } while (randomNeighbour === availablesNeigbours.length);
+    //we want a random number between 0 and the number of neigbours we have - 1
+    const randomNeighbour = Math.floor(
+      Math.random() * availablesNeigbours.length
+    );
+    //we now have our random neibour
     const nextNode = availablesNeigbours[randomNeighbour];
     nextNode.parent = parentNode;
+    //we remove the wall between them
     openMiddleNode(nextNode);
+    //and call the function on it
     this.mazeGenerator(nextNode);
+    //when the recursion of the nextnode end the current node might still have neigbours, so we call the function again on itself
     return this.mazeGenerator(parentNode);
+    //and thats it
   }
 }
+
+//node class declaration
 
 class createNode {
   constructor(row, col) {
@@ -461,6 +528,7 @@ class createNode {
     this.distance = undefined;
     this.heuristic = undefined;
   }
+  //call to reset path related things
   reset() {
     this.isChecked = false;
     this.isVisited = false;
@@ -468,21 +536,25 @@ class createNode {
     this.distance = undefined;
     this.heuristic = undefined;
   }
+  //update the visited state of its corresponding node component
   updateVisited() {
     const eventName = "node-" + this.row + "-" + this.col + "-visited";
     sendEvent(eventName);
   }
+  //update the path state of its corresponding node component
   updatePath() {
     this.isPath = true;
     const eventName = "node-" + this.row + "-" + this.col + "-path";
     sendEvent(eventName);
   }
+  //reset the end/start state of its corresponding node
   updateIO() {
     this.isStart = false;
     this.isEnd = false;
     const eventName = "node-" + this.row + "-" + this.col + "-IO";
     sendEvent(eventName);
   }
+  //clear wall and weight
   clear() {
     this.isWall = false;
     this.weight = 1;
