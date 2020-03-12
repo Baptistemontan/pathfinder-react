@@ -311,6 +311,11 @@ export default class Grid extends Component {
   //so to stop the animation to occur I just change one variable
   //and the random argument is just a troll, this will just shuffle the node queue
   //wich make the algorithm look randomly around
+  //but  what is funny about this algorithm is that because its an implementation to dijkstra
+  //it still use the update the node distance when it is visited by a closer node to the origin
+  //(I hope im clear, go see * in the test neighbours function)
+  //so technicly, as the complexity of the path goes up, the chance that it will find the shortest path goes up as well
+
   Dijkstra(
     parentNode,
     goalRow,
@@ -386,6 +391,7 @@ export default class Grid extends Component {
         }
         //if it has an infinite distance or if the weight + the 'parent' node distance is less than its actual distance
         //we update its distance and its parent
+        // HERE ==> *******
         if (
           neighbourNode.weight + parentNode.distance < neighbourNode.distance ||
           neighbourNode.distance === undefined
