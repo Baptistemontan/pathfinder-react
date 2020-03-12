@@ -34,7 +34,7 @@ export default class Grid extends Component {
     this.launchID = undefined;
     this.activeAlgo = null;
     this.diagonal = false; //not implemented yet
-    this.algos = ["Dijkstra", "A*"];
+    this.algos = ["Dijkstra", "A*", "Random"];
     this.speeds = ["Fast", "Normal", "Slow"];
     this.speed = 20;
     this.refresh = ["ON", "OFF"];
@@ -113,6 +113,7 @@ export default class Grid extends Component {
           this.endNode.row,
           this.endNode.col,
           false,
+          false,
           this.launchID,
           animation
         );
@@ -122,6 +123,18 @@ export default class Grid extends Component {
           startNode,
           this.endNode.row,
           this.endNode.col,
+          true,
+          false,
+          this.launchID,
+          animation
+        );
+      }
+      if (this.activeAlgo === this.algos[2]) {
+        this.Dijkstra(
+          startNode,
+          this.endNode.row,
+          this.endNode.col,
+          false,
           true,
           this.launchID,
           animation
@@ -290,17 +303,20 @@ export default class Grid extends Component {
   //big oof
   //so here is my implementation of dijkstra
   //Im sure its can be optimised but meh
-  //so in input: the start node, the goal row/col, if we use A* or not,the launchID and if we enable animation
+  //so in input: the start node, the goal row/col, if we use A* or not,random or not,the launchID and if we enable animation
   //so first the launchID, what the heck is that? well if the animation is still going throught and then boum you want a maze
   //you will have your maze but the setTimeout are goig to say: 'I dont care, my mission is to make you a visited node'
   //so to prevent that before each launch of the algorithm i create a random launchID
   //so in the setTimeout I look if the ID has changed, if yes, it dont do shit and my maze is fine
   //so to stop the animation to occur I just change one variable
+  //and the random argument is just a troll, this will just shuffle the node queue
+  //wich make the algorithm look randomly around
   Dijkstra(
     parentNode,
     goalRow,
     goalCol,
     astar,
+    random,
     ID,
     animation = false,
     nodeQueue = [],
@@ -335,6 +351,15 @@ export default class Grid extends Component {
           }
           //otherwise compare the heuristic value of the 2 elements
           return a.heuristic - b.heuristic;
+        } else if (random) {
+          if (a.isEnd) {
+            return -1;
+          }
+          if (b.isEnd) {
+            return 1;
+          }
+          //with random we random sort the list
+          return Math.random() - 0.5;
         } else {
           // with vanilla Dijkstra we sort by the distance to the origin
           return a.distance - b.distance;
@@ -450,12 +475,14 @@ export default class Grid extends Component {
       goalRow,
       goalCol,
       astar,
+      random,
       ID,
       animation,
       nodeQueue,
       iteration + 1
     );
   }
+
   //this maze generator is  just a recursive backtracking
   //we give him an active node
   mazeGenerator(parentNode) {
@@ -501,7 +528,7 @@ export default class Grid extends Component {
     );
     //we now have our random neibour
     const nextNode = availablesNeigbours[randomNeighbour];
-    nextNode.parent = parentNode;
+    nextNode.parentNode = parentNode;
     //we remove the wall between them
     openMiddleNode(nextNode);
     //and call the function on it
