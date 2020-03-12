@@ -36,7 +36,7 @@ export default class Grid extends Component {
     this.diagonal = false; //not implemented yet
     this.algos = ["Dijkstra", "A*"];
     this.speeds = ["Fast", "Normal", "Slow"];
-    this.speed = 10;
+    this.speed = 20;
     this.refresh = ["ON", "OFF"];
     this.autoRefresh = true;
     this.endNode = {
@@ -172,9 +172,9 @@ export default class Grid extends Component {
   //change the speed animation based on the choice made
   handleSpeedChange = content => {
     if (content === "Slow") {
-      this.speed = 60;
+      this.speed = 40;
     } else if (content === "Normal") {
-      this.speed = 25;
+      this.speed = 20;
     } else {
       this.speed = 10;
     }
@@ -232,7 +232,7 @@ export default class Grid extends Component {
             />
             <List
               handleChange={this.handleSpeedChange}
-              name={this.speeds[0]}
+              name={this.speeds[1]}
               choices={this.speeds}
               id="speed-list"
               question="Speed :"
