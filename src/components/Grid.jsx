@@ -300,6 +300,7 @@ export default class Grid extends Component {
       </div>
     );
   }
+
   //big oof
   //so here is my implementation of dijkstra
   //Im sure its can be optimised but meh
@@ -315,7 +316,6 @@ export default class Grid extends Component {
   //it still use the update the node distance when it is visited by a closer node to the origin
   //(I hope im clear, go see * in the test neighbours function)
   //so technicly, as the complexity of the path goes up, the chance that it will find the shortest path goes up as well
-
   Dijkstra(
     parentNode,
     goalRow,
@@ -391,7 +391,7 @@ export default class Grid extends Component {
         }
         //if it has an infinite distance or if the weight + the 'parent' node distance is less than its actual distance
         //we update its distance and its parent
-        // HERE ==> *******
+        // (HERE ==> *)
         if (
           neighbourNode.weight + parentNode.distance < neighbourNode.distance ||
           neighbourNode.distance === undefined
