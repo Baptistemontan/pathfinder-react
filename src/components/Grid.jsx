@@ -13,7 +13,7 @@ const ROW_NUMBER = 23; //23
 const COL_NUMBER = 51; //51
 //and an event trigger, which will just trigger every event listener that listen for the event name that you pass to the function
 //(this app is heavily based on event, i couldnt found another way to centralised the nodes but to update there state themself)
-const sendEvent = name => {
+const sendEvent = (name) => {
   const event = new CustomEvent(name);
   document.dispatchEvent(event);
 };
@@ -34,25 +34,25 @@ export default class Grid extends Component {
     this.launchID = undefined;
     this.activeAlgo = null;
     this.diagonal = false; //not implemented yet
-    this.algos = ["Dijkstra", "A*", "Random"];
+    this.algos = ["Dijkstra", "A*", "Greedy", "Random"];
     this.speeds = ["Fast", "Normal", "Slow"];
     this.speed = 20;
     this.refresh = ["ON", "OFF"];
     this.autoRefresh = true;
     this.endNode = {
       row: 11,
-      col: 45
+      col: 45,
     };
     this.startNode = {
       row: 11,
-      col: 5
+      col: 5,
     };
     this.grid = [];
   }
   //when the component is rendered, we prevent the right click pop up, I know its a bad things to do
   //but its just that if every time you add a weight you have this pop up its annoying
   componentDidMount() {
-    document.getElementById("grid").addEventListener("contextmenu", e => {
+    document.getElementById("grid").addEventListener("contextmenu", (e) => {
       e.preventDefault();
     });
   }
@@ -79,7 +79,7 @@ export default class Grid extends Component {
   //the update input is in cas we want to reset them but not update them visualy
   reset = (update = true) => {
     this.launchID = Math.random();
-    this.grid.forEach(row => row.forEach(node => node.reset()));
+    this.grid.forEach((row) => row.forEach((node) => node.reset()));
     if (update) {
       sendEvent("reset");
     }
@@ -88,7 +88,7 @@ export default class Grid extends Component {
   //and we also call reset at the end
   clear = (update = true) => {
     this.launchID = Math.random();
-    this.grid.forEach(row => row.forEach(node => node.clear()));
+    this.grid.forEach((row) => row.forEach((node) => node.clear()));
     this.reset(update);
   };
   //this is to handle the visualize button click
@@ -114,6 +114,7 @@ export default class Grid extends Component {
           this.endNode.col,
           false,
           false,
+          false,
           this.launchID,
           animation
         );
@@ -125,6 +126,7 @@ export default class Grid extends Component {
           this.endNode.col,
           true,
           false,
+          false,
           this.launchID,
           animation
         );
@@ -134,6 +136,19 @@ export default class Grid extends Component {
           startNode,
           this.endNode.row,
           this.endNode.col,
+          false,
+          true,
+          false,
+          this.launchID,
+          animation
+        );
+      }
+      if (this.activeAlgo === this.algos[3]) {
+        this.Dijkstra(
+          startNode,
+          this.endNode.row,
+          this.endNode.col,
+          false,
           false,
           true,
           this.launchID,
@@ -170,12 +185,12 @@ export default class Grid extends Component {
     }
   };
   //change the active variable based on woch one has been choosen in the list
-  handleAlgoChange = content => {
+  handleAlgoChange = (content) => {
     this.activeAlgo = content;
   };
 
   //toggle the auto refresh
-  handleRefreshChange = content => {
+  handleRefreshChange = (content) => {
     if (content === "ON") {
       this.autoRefresh = true;
     } else {
@@ -183,7 +198,7 @@ export default class Grid extends Component {
     }
   };
   //change the speed animation based on the choice made
-  handleSpeedChange = content => {
+  handleSpeedChange = (content) => {
     if (content === "Slow") {
       this.speed = 40;
     } else if (content === "Normal") {
@@ -197,8 +212,8 @@ export default class Grid extends Component {
   handleMazeGeneration = () => {
     this.clear(false);
     //we make each node a wall, exept the end/start nodes
-    this.grid.forEach(row =>
-      row.forEach(node => {
+    this.grid.forEach((row) =>
+      row.forEach((node) => {
         if (!node.isStart && !node.isEnd) {
           node.isWall = true;
         }
@@ -283,8 +298,8 @@ export default class Grid extends Component {
           </div>
         </div>
         <div id="grid" className="noselect" onMouseUp={this.handleMouseUp}>
-          {this.grid.map(row =>
-            row.map(node => {
+          {this.grid.map((row) =>
+            row.map((node) => {
               return (
                 <Node
                   id={"node" + node.row + "-" + node.col}
@@ -321,6 +336,7 @@ export default class Grid extends Component {
     goalRow,
     goalCol,
     astar,
+    greedy,
     random,
     ID,
     animation = false,
@@ -332,7 +348,7 @@ export default class Grid extends Component {
       { row: 1, col: 0 },
       { row: -1, col: 0 },
       { row: 0, col: 1 },
-      { row: 0, col: -1 }
+      { row: 0, col: -1 },
     ];
     // NOT IMPLEMENTED YET
     if (this.diagonal) {
@@ -365,6 +381,9 @@ export default class Grid extends Component {
           }
           //with random we random sort the list
           return Math.random() - 0.5;
+        } else if (greedy) {
+          //with greedy algorithm we sort by the distance to the end
+          return a.heuristic - b.heuristic;
         } else {
           // with vanilla Dijkstra we sort by the distance to the origin
           return a.distance - b.distance;
@@ -400,7 +419,7 @@ export default class Grid extends Component {
           neighbourNode.parentNode = parentNode;
         }
         //if we use A* we assign a heuristic value to the node
-        if (astar && neighbourNode.heuristic === undefined) {
+        if ((astar || greedy) && neighbourNode.heuristic === undefined) {
           //I propose 2 ways to compute this heuristic value,
           //I didnt made any research on wich one is the best for this case (a grid)
           // but i found the first one to look better with the animations turned on
@@ -455,7 +474,7 @@ export default class Grid extends Component {
       }
     };
     //here we just cycle through each vector to check the neighbours of the current active node
-    vectors.forEach(vector => {
+    vectors.forEach((vector) => {
       testNeighbour(parentNode.row + vector.row, parentNode.col + vector.col);
     });
     //then we sort the queue
@@ -481,6 +500,7 @@ export default class Grid extends Component {
       goalRow,
       goalCol,
       astar,
+      greedy,
       random,
       ID,
       animation,
@@ -500,7 +520,7 @@ export default class Grid extends Component {
       { row: 2, col: 0 },
       { row: -2, col: 0 },
       { row: 0, col: 2 },
-      { row: 0, col: -2 }
+      { row: 0, col: -2 },
     ];
     const availablesNeigbours = [];
     //thi function will test the giver neigbours
@@ -515,13 +535,13 @@ export default class Grid extends Component {
       }
     };
     //this is to remove the walls between this node and the next node
-    const openMiddleNode = node => {
+    const openMiddleNode = (node) => {
       const row = (node.row + parentNode.row) / 2;
       const col = (node.col + parentNode.col) / 2;
       this.grid[row][col].isWall = false;
     };
     //we test all our neigbours node
-    vectors.forEach(vector => {
+    vectors.forEach((vector) => {
       testNeigbours(parentNode.row + vector.row, parentNode.col + vector.col);
     });
     //if there is no available neighbours we stop for this node
